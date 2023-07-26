@@ -1,4 +1,4 @@
-from pyamaze import maze
+from pyamaze import maze,agent
 from queue import PriorityQueue
 #defining maze size
 m=maze(5,5)
@@ -21,38 +21,45 @@ def h(cell1,cell2):
 
 def aStar(m):
     start=(m.rows,m.cols)
-    g_score={cell:float('inf')for cell in m.grid}
+    g_score={cell:float('inf') for cell in m.grid}
     g_score[start]=0
-    g_score={cell:float('inf')for cell in m.grid}
-    f_score={cell:float('inf')for cell in m.grid}
+    f_score={cell:float('inf') for cell in m.grid}
     f_score[start]=h(start,(1,1))
 
     open=PriorityQueue()
     open.put((h(start,(1,1)),h(start,(1,1)),start))
-
+    aPath={}
     while not open.empty():
-        currcell=open.get()[2]
-        if currcell==(1,1):
+        currCell=open.get()[2]
+        if currCell==(1,1):
             break
-        for d in 'ENSNW':
-            if m.maze_map[currcell][d]==True:
+        for d in 'ESNW':
+            if m.maze_map[currCell][d]==True:
                 if d=='E':
-                    childcell=(currcell[0],currcell[1]+1)
+                    childcell=(currCell[0],currCell[1]+1)
                 if d=='W':
-                    childcell=(currcell[0],currcell[1]-1)
+                    childcell=(currCell[0],currCell[1]-1)
                 if d=='N':
-                    childcell=(currcell[0]-1,currcell[1])
+                    childcell=(currCell[0]-1,currCell[1])
                 if d=='S':
-                    childcell=(currcell[0]+1,currcell[1])
+                    childcell=(currCell[0]+1,currCell[1])
 
-                temp_g_score=g_score[currcell]+1
+                temp_g_score=g_score[currCell]+1
                 temp_f_score=temp_g_score+h(childcell,(1,1))
 
                 if temp_f_score < f_score[childcell]:
-                    g_score[childcell]=temp_g_score
-                    f_score[childcell]=temp_f_score
+                    g_score[childcell]= temp_g_score
+                    f_score[childcell]= temp_f_score
                     open.put((temp_f_score,h(childcell,(1,1)),childcell))
+                    aPath[childcell]=currCell
+    fwdPath={}
+    cell=(1,1)
+    while cell!=start:
+        fwdPath[aPath[cell]]=cell
+        cell=aPath[cell]
+    return fwdPath
 
-
-
+path=aStar(m)
+a=agent(m,footprints=True)
+m.tracePath({a:path})
 m.run()
