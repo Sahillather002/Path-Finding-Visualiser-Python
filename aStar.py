@@ -1,7 +1,7 @@
-from pyamaze import maze,agent
+from pyamaze import maze,agent,textLabel
 from queue import PriorityQueue
 #defining maze size
-m=maze(5,5)
+m=maze(15,15)
 m.CreateMaze()
 
 # print(m.maze_map)
@@ -62,4 +62,5 @@ def aStar(m):
 path=aStar(m)
 a=agent(m,footprints=True)
 m.tracePath({a:path})
+l=textLabel(m,'A Star Algo Path Length',len(path))
 m.run()
